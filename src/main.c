@@ -7,19 +7,21 @@
 #define PIN_LED 5
 #define STRBUFFER_LENGTH 8
 
-void setup();
 
 //variables edited by interrupts
 volatile char received;
-volatile char i;
-volatile char len;
+volatile int i;
 char strbuf[STRBUFFER_LENGTH];
 
 //constant strings to compare input to
 const char* textOn = "led on";
-#define ON_LENGTH 7
+#define ON_LENGTH 6
 const char* textOff = "led off";
-#define OFF_LENGTH 8
+#define OFF_LENGTH 7
+
+
+void setup();
+
 
 int main()
 {
@@ -30,16 +32,16 @@ int main()
     if(received == -1){
       //reset flag then compare to desired string
       received = 0;
-      if(len == ON_LENGTH && strncmp(strbuf, textOn, ON_LENGTH - 1) == 0) {
+      uart_Transmit(i + '0');
+      if(i == ON_LENGTH && strncmp(strbuf, textOn, ON_LENGTH) == 0) {
         //turn LED on 
         PORTB |= (1 << PIN_LED);
-        continue;
       }
-      if(len == OFF_LENGTH && strncmp(strbuf, textOff, OFF_LENGTH - 1) == 0) {
+      else if(i == OFF_LENGTH && strncmp(strbuf, textOff, OFF_LENGTH) == 0) {
         //turn LED off
         PORTB &= ~(1 << PIN_LED);
-        continue;
       }
+      i = 0;
     }
 
   }
@@ -67,12 +69,12 @@ ISR(PCINT0_vect) //interrupt handler for button pin
 
 ISR(USART_RX_vect) //interrupt handler for rx 
 {
-  received = UDR0;
-  if(received == '\n'){
-    len = i + 1;
-    i = 0;
+  received = UDR0; //received char from data register
+  if(received == '\n' || received == '\0') //newline and end characters determine end of user input
+  {
     received = -1;
+    //set flag, indicating a full line of user input was received 
   } else strbuf[i++] = received;
 
-  if(i >= STRBUFFER_LENGTH) i = 0;
+  if(i >= STRBUFFER_LENGTH) i = 0; //reset i if it exceeds size of array
 }
