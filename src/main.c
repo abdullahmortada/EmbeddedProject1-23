@@ -66,7 +66,7 @@ void setup()
 
 ISR(PCINT0_vect) //interrupt handler for button pin
 {
-    if((PINB & (1 << PIN_BUTTON)) == 0) uart_SendString("button pressed\n", 15);
+    if(dio_GetPin('b', PIN_BUTTON) == 0) uart_SendString("button pressed\n", 15);
 }
 
 ISR(USART_RX_vect) //interrupt handler for rx 

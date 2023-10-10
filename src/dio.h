@@ -20,5 +20,5 @@ void dio_SetOutputReg(char reg, uint8_t pin);
 
 uint8_t BitToBitmask(char bit);
 
-uint8_t* CharToPort(char reg, uint8_t ddrOrPort);
+volatile uint8_t* CharToPort(char reg, uint8_t ddrOrPort);
 #endif 
