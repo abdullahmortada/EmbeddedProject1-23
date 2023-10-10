@@ -2,9 +2,12 @@
 #include <avr/interrupt.h>
 #include <string.h>
 #include "uart.h"
+#include "dio.h"
 
 #define PIN_BUTTON 4
+#define PORT_BUTTON 'b'
 #define PIN_LED 5
+#define PORT_LED 'b'
 #define STRBUFFER_LENGTH 8
 
 
@@ -32,14 +35,13 @@ int main()
     if(received == -1){
       //reset flag then compare to desired string
       received = 0;
-      uart_Transmit(i + '0');
       if(i == ON_LENGTH && strncmp(strbuf, textOn, ON_LENGTH) == 0) {
         //turn LED on 
-        PORTB |= (1 << PIN_LED);
+        dio_SetPin(PORT_LED, PIN_LED, 1);
       }
       else if(i == OFF_LENGTH && strncmp(strbuf, textOff, OFF_LENGTH) == 0) {
         //turn LED off
-        PORTB &= ~(1 << PIN_LED);
+        dio_SetPin(PORT_LED, PIN_LED, 0);
       }
       i = 0;
     }
@@ -52,8 +54,8 @@ void setup()
 {
   uart_Init(9600);
 
-  DDRB = (1 << PIN_LED); // set led's pin to output
-  PORTB = (1 << PIN_BUTTON); //enable pull-up resistor for button
+  dio_SetDirection(PORT_LED, PIN_LED, OUTPUT);
+  dio_SetDirection(PORT_BUTTON, PIN_BUTTON, INPUT_PULLUP);
 
   cli(); //disable interrupts during setting up
   PCICR |= 1; //enable interrupts for port b
