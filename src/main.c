@@ -7,7 +7,7 @@
 #define PIN_BUTTON 4
 #define PORT_BUTTON 'b'
 #define PIN_LED 5
-#define PORT_LED 'b'
+#define PORT_LED 'b' 
 #define STRBUFFER_LENGTH 8
 
 
@@ -52,24 +52,24 @@ int main()
 
 void setup()
 {
+  cli(); //disable interrupts during setting up
   uart_Init(9600);
 
   dio_SetDirection(PORT_LED, PIN_LED, OUTPUT);
   dio_SetDirection(PORT_BUTTON, PIN_BUTTON, INPUT_PULLUP);
 
-  cli(); //disable interrupts during setting up
-  PCICR |= 1; //enable interrupts for port b
-  PCMSK0 = (1 << PIN_BUTTON); //enable interrupt for button pin
-  UCSR0B |= (1 << RXCIE0); //enable interrupt for rx
+  dio_SetPin('p', PCIE0, 1); //enable interrupts for port b
+  dio_SetDirection('b', PIN_BUTTON, INTERRUPT_REG); //enable interrupt for button pin
+  dio_EnableRXInterrupt();
   sei(); //reenable interrupts
 }
 
-ISR(PCINT0_vect) //interrupt handler for button pin
+ISR(PORTB_INTERRUPT) //interrupt handler for button pin
 {
     if(dio_GetPin('b', PIN_BUTTON) == 0) uart_SendString("button pressed\n", 15);
 }
 
-ISR(USART_RX_vect) //interrupt handler for rx 
+ISR(UART_RX_INTERRUPT) //interrupt handler for rx 
 {
   received = uart_Receive(); //received char from data register
   if(received == '\n' || received == '\0') //newline and end characters determine end of user input

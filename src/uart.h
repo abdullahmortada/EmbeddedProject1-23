@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define UART_RX_INTERRUPT USART_RX_vect
+#define UART_TX_INTERRUPT USART_TX_vect
+
 void uart_SetBaudRate(uint64_t baud);
 
 void uart_Init(uint64_t baud);
