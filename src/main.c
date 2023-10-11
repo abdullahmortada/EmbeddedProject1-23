@@ -12,9 +12,9 @@
 
 
 //variables edited by interrupts
-volatile char received;
-volatile int i;
 char strbuf[STRBUFFER_LENGTH];
+volatile char received;
+volatile int16_t i;
 
 //constant strings to compare input to
 const char* textOn = "led on";
@@ -71,7 +71,7 @@ ISR(PCINT0_vect) //interrupt handler for button pin
 
 ISR(USART_RX_vect) //interrupt handler for rx 
 {
-  received = UDR0; //received char from data register
+  received = uart_Receive(); //received char from data register
   if(received == '\n' || received == '\0') //newline and end characters determine end of user input
   {
     received = -1;
