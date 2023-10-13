@@ -3,28 +3,12 @@
 #include <string.h>
 #include "uart.h"
 #include "dio.h"
-
-#define PIN_BUTTON 4
-#define PORT_BUTTON 'b'
-#define PIN_LED 5
-#define PORT_LED 'b' 
-#define STRBUFFER_LENGTH 8
-
+#include "main.h"
 
 //variables edited by interrupts
 char strbuf[STRBUFFER_LENGTH];
 volatile char received;
 volatile int16_t i;
-
-//constant strings to compare input to
-const char* textOn = "led on";
-#define ON_LENGTH 6
-const char* textOff = "led off";
-#define OFF_LENGTH 7
-
-
-void setup();
-
 
 int main()
 {
@@ -64,19 +48,3 @@ void setup()
   sei(); //reenable interrupts
 }
 
-ISR(PORTB_INTERRUPT) //interrupt handler for button pin
-{
-    if(dio_GetPin('b', PIN_BUTTON) == 0) uart_SendString("button pressed\n", 15);
-}
-
-ISR(UART_RX_INTERRUPT) //interrupt handler for rx 
-{
-  received = uart_Receive(); //received char from data register
-  if(received == '\n' || received == '\0') //newline and end characters determine end of user input
-  {
-    received = -1;
-    //set flag, indicating a full line of user input was received 
-  } else strbuf[i++] = received;
-
-  if(i >= STRBUFFER_LENGTH) i = 0; //reset i if it exceeds size of array
-}
