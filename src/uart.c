@@ -36,3 +36,8 @@ uint8_t uart_Receive(){
   while((UCSR0A & (1 << RXC0)) == 0);
   return UDR0; //return received data
 }
+
+
+void uart_EnableRXInterrupt(){UCSR0B |= (1 << RXCIE0);}
+void uart_EnableTXInterrupt(){UCSR0B |= (1 << TXCIE0);}
+

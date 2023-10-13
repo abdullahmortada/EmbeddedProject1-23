@@ -54,13 +54,13 @@ void setup()
 {
   cli(); //disable interrupts during setting up
   uart_Init(9600);
+  uart_EnableRXInterrupt();
 
   dio_SetDirection(PORT_LED, PIN_LED, OUTPUT);
   dio_SetDirection(PORT_BUTTON, PIN_BUTTON, INPUT_PULLUP);
 
   dio_SetDirection('p', PCIE0, INTERRUPT_REG); //enable interrupts for port b
   dio_SetDirection('b', PIN_BUTTON, INTERRUPT_REG); //enable interrupt for button pin
-  dio_EnableRXInterrupt();
   sei(); //reenable interrupts
 }
 

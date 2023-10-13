@@ -15,4 +15,7 @@ void uart_Transmit(uint8_t data);
 void uart_SendString(char * String, uint32_t length);
 
 uint8_t uart_Receive(void);
+
+void uart_EnableRXInterrupt();
+void uart_EnableTXInterrupt();
 #endif

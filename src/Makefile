@@ -3,3 +3,4 @@ default:
 	avr-gcc -o main.bin main.o 
 	avr-objcopy -O ihex -R .eeprom main.bin main.hex 
 	sudo avrdude -F -V -c arduino -p ATMEGA328P -P /dev/ttyUSB0 -b 115200 -U flash:w:main.hex
+	rm main.bin main.o 

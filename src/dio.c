@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include "dio.h"
 
-void dio_SetDirection(char reg, uint8_t pin, uint8_t direction){
+void dio_SetDirection(char reg, uint8_t pin, int8_t direction){
   //get register pointer from initial and desired direction
   volatile uint8_t *regPointer = CharToPort(reg, DIRECTION_REG);
 
@@ -53,30 +53,20 @@ uint8_t dio_GetPin(char reg, uint8_t pin){
 }
 
 
-void dio_EnableRXInterrupt(){UCSR0B |= (1 << RXCIE0);}
-void dio_EnableTXInterrupt(){UCSR0B |= (1 << TXCIE0);}
-
-
-volatile uint8_t* CharToPort(char reg, uint8_t ddrOrPort){
+volatile uint8_t* CharToPort(char reg, int8_t ddrOrPort){
   //return address to the desired register casted as a pointer 
   switch(reg){
     case 'b':
-      if (ddrOrPort == DIRECTION_REG) return ((volatile uint8_t*)0x24);
-      if (ddrOrPort == OUTPUT) return ((volatile uint8_t*)0x25);
       if (ddrOrPort == INTERRUPT_REG) return ((volatile uint8_t*)0x6B);
-      return ((volatile uint8_t*)0x23);
+      return ((volatile uint8_t*)0x24 + ddrOrPort); //ddr address + offset
 
     case 'c':
-      if (ddrOrPort == DIRECTION_REG) return ((volatile uint8_t*)0x27);
-      if (ddrOrPort == OUTPUT) return ((volatile uint8_t*)0x28);
       if (ddrOrPort == INTERRUPT_REG) return ((volatile uint8_t*)0x6C);
-      return ((volatile uint8_t*)0x26);
+      return ((volatile uint8_t*)0x27 + ddrOrPort);
 
     case 'd':
-      if (ddrOrPort == DIRECTION_REG) return ((volatile uint8_t*)0x2A);
-      if (ddrOrPort == OUTPUT) return ((volatile uint8_t*)0x2B);
       if (ddrOrPort == INTERRUPT_REG) return ((volatile uint8_t*)0x6D);
-      return ((volatile uint8_t*)0x29);
+      return ((volatile uint8_t*)0x2A + ddrOrPort);
 
     case 'p':
       return ((volatile uint8_t*)0x68);
